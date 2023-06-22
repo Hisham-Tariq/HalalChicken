@@ -5,14 +5,21 @@
 // It must be able to handle all possible errors
 
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import {firebaseStorage} from '@/config/firebase'
+import { firebaseStorage } from '@/config/firebase'
+import { FirestoreUploadedFile } from "@/types/upload-file"
 
 export class FirebaseStorageService {
     storage = firebaseStorage;
     constructor() {
     }
 
-    async uploadFile(file: File, rootFolderPath: string): Promise<string> {
+    /**
+     * Uploads a file to Firebase Storage using the given file and root folder path.
+     * @param file The file to upload.
+     * @param rootFolderPath The root folder path to upload the file to.
+     * @returns A Promise that resolves with an object containing the path and download URL of the uploaded file.
+     */
+    async uploadFile(file: File, rootFolderPath: string): Promise<FirestoreUploadedFile> {
         // Generate a document ID
         const randomId = Math.random().toString(36).substring(2, 8);
 
@@ -21,17 +28,43 @@ export class FirebaseStorageService {
 
         const storageRef = ref(this.storage, path);
         await uploadBytes(storageRef, file);
-        return path;
+
+        // Return an object containing the path and the download URL
+        const downloadURL = await getDownloadURL(storageRef);
+        return {
+            path,
+            downloadURL
+        };
     }
 
-    async downloadFile(path: string) {
+
+    /**
+     * Downloads a file from Firebase Storage using the given path.
+     * @param path The path of the file to download.
+     * @returns A Promise that resolves with the download URL of the file.
+     */
+    async downloadFile(path: string): Promise<string> {
+        // Get a reference to the file in Firebase Storage using the given path
         const storageRef = ref(this.storage, path);
+
+        // Get the download URL of the file
         const url = await getDownloadURL(storageRef);
+
+        // Return the download URL
         return url;
     }
 
-    async deleteFile(path: string) {
+    /**
+     * Deletes a file from Firebase Storage using the given path.
+     * @param path The path of the file to delete.
+     * @returns A Promise that resolves when the file has been successfully deleted.
+     */
+    async deleteFile(path: string): Promise<void> {
+        // Get a reference to the file in Firebase Storage using the given path
         const storageRef = ref(this.storage, path);
+
+        // Delete the file from Firebase Storage
         await deleteObject(storageRef);
     }
+
 }

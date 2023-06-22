@@ -22,6 +22,7 @@
     "paths": {
       "@/*": ["./*"],
       "@/client": ["./app/(client)/*"],
+      "@/admin": ["./app/(admin)/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -1,9 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { FoodMainCategories, FoodSubCategories, FoodSubCategory } from '@/constants/categories'
+import { FoodItemType, FoodMainCategories, FoodSubCategories, FoodSubCategoriesMapping, FoodSubCategory } from '@/types/food-item'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -16,7 +15,6 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Check, ChevronsUpDown, PlusCircle, Save } from "lucide-react"
 import { ControllerRenderProps, useForm } from "react-hook-form"
 
@@ -35,10 +33,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn, inputStringToNumber } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import { useState } from "react"
-import {FoodItemsService, FoodItemTypeWithFile} from '@/services/food-items'
+import { FoodItemsService } from '@/services/food-items'
+import { FoodItemTypeWithFile, getMainCategory } from '@/types/food-item'
+import { toast } from "@/components/ui/use-toast"
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const SUB_CATEGORIES = FoodSubCategories.filter((cat) => cat != "Pizza")
 const DEFAULT_VALUES = {
     name: "",
     description: "",
@@ -46,7 +47,8 @@ const DEFAULT_VALUES = {
     availableInMeal: false,
     mealPrice: 0,
     image: "",
-    category: FoodSubCategories[0],
+    category: SUB_CATEGORIES[0],
+    mainCategory: getMainCategory(SUB_CATEGORIES[0])
 };
 
 const baseSchema = z.object({
@@ -65,17 +67,20 @@ const baseSchema = z.object({
     category: z.enum(FoodSubCategories, {
         required_error: "Please select a category.",
     }),
+    mainCategory: z.enum(FoodMainCategories, {
+        required_error: "Please select a category.",
+    })
 })
 
 const formSchema = z.discriminatedUnion("availableInMeal", [
     z.object({
-        availableInMeal: z.literal(true),
+        availableInMeal: z.literal(true as boolean),
         mealPrice: z.number().min(1, {
             message: "Meal Price must be at least 1.",
         }),
     }).merge(baseSchema),
     z.object({
-        availableInMeal: z.literal(false),
+        availableInMeal: z.literal(false as boolean),
         mealPrice: z.number().min(0, {
             message: "Meal Price must be at least 0.",
         }),
@@ -83,8 +88,13 @@ const formSchema = z.discriminatedUnion("availableInMeal", [
 ]);
 
 
-export function NewItemDialog() {
+type NewItemDialogProps = {
+    children: React.ReactNode,
+    item?: FoodItemType,
+}
 
+export function NewItemDialog(props: NewItemDialogProps) {
+    const { children, item } = props;
     const [itemImage, setItemImage] = useState<File | null>(null)
 
     const onImageChanged = (e: React.ChangeEvent<HTMLInputElement>, onFieldChange: (...event: any[]) => void) => {
@@ -106,42 +116,80 @@ export function NewItemDialog() {
         onFieldChange(e);
     }
 
+    const getDefaultValues = () => {
+        if (item) {
+            return {
+                ...item,
+                image: item.image.downloadURL,
+            }
+        }
+        return DEFAULT_VALUES
+    }
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: DEFAULT_VALUES,
+        defaultValues: getDefaultValues(),
     })
 
     // 2. Define a submit handler.
     function onSubmit(values: z.infer<typeof formSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        if (itemImage == null) {
-            console.log("Image is required")
+        if (itemImage == null && item == null) {
+            toast({
+                title: "Item Image",
+                description: "Image is required",
+            });
             return
         }
-        const item = {...values, image: itemImage} as FoodItemTypeWithFile
-        FoodItemsService.instance.addFoodItem(item);
-    }
-
-    function onAvailableInMealChanged() {
+        if (item == null) {
+            const foodItem = { ...values, image: itemImage } as FoodItemTypeWithFile
+            FoodItemsService.instance.addFoodItem(foodItem).then(() => {
+                // onItemAdded?.()
+                toast({
+                    title: "Item Added",
+                    description: "Item has been added successfully",
+                })
+                form.reset(DEFAULT_VALUES)
+            });
+        } else {
+            let foodItem: FoodItemTypeWithFile | FoodItemType;
+            if (itemImage != null) {
+                foodItem = { ...item, ...values, image: itemImage } as FoodItemTypeWithFile
+            } else {
+                foodItem = { ...item, ...values, image: item.image } as FoodItemType
+            }
+            console.log(foodItem)
+            FoodItemsService.instance.updateFoodItem(item.id!, foodItem, item).then(() => {
+                // onItemAdded?.()
+                toast({
+                    title: "Item Updated",
+                    description: "Item has been updated successfully",
+                });
+                form.reset(DEFAULT_VALUES)
+            });
+        }
 
     }
 
     const onDialogOpenChange = (open: boolean) => {
         if (open) {
-            form.reset(DEFAULT_VALUES)
+            const { image, ...data } = item ?? DEFAULT_VALUES
+            form.reset({
+                ...data,
+                image: "",
+            })
         }
     }
+
+
 
 
     return (
         <Dialog onOpenChange={onDialogOpenChange}>
             <DialogTrigger asChild>
-                <Button size="sm">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    New Item
-                </Button>
+                {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[800px] sm:max-h-[550px] flex flex-col p-0">
                 <DialogHeader className="pt-6 px-6">
@@ -224,6 +272,7 @@ export function NewItemDialog() {
                                                                     onSelect={(value) => {
                                                                         const selectedCategory = FoodSubCategories.find((cat) => cat.toLowerCase() === value) as FoodSubCategory;
                                                                         form.setValue("category", selectedCategory as FoodSubCategory)
+                                                                        form.setValue("mainCategory", getMainCategory(selectedCategory)!)
                                                                     }}
                                                                 >
                                                                     <Check
@@ -329,7 +378,7 @@ export function NewItemDialog() {
                             <DialogFooter className="col-span-2 flex justify-end">
                                 <Button size={'lg'} type="submit">
                                     <Save className="mr-2 h-4 w-4" />
-                                    Save changes
+                                    {item ? 'Update' : 'Save Changes'}
                                 </Button>
                             </DialogFooter>
                         </form>

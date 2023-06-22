@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "dev",
+            "type": "npm",
+            "workingDir": "$PROJECT_DIR$",
+            "command": "run",
+            "scripts": "dev",
+            "packageFile": "H:\\Developer\\halal_chicken\\package.json"
+        }
+    ]
+}

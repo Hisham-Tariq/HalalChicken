@@ -7,7 +7,6 @@ import { MainNav } from './admin/dashboard/components/main-nav'
 import { Search } from './admin/dashboard/components/search'
 import { UserNav } from './admin/dashboard/components/user-nav'
 import { FirestoreProvider } from './providers/firebase-provider'
-import ReactQueryProvider from '@/app/(admin)/provider'
 import { Toaster } from "@/components/ui/toaster"
 import React from "react";
 
@@ -27,30 +26,28 @@ export default function RootLayout(props: RootLayoutProps) {
     const children = props.children;
     return (
         <html lang="en">
-            <ReactQueryProvider>
-                <body className={`flex ${inter.className}`}>
-                    <Sidebar />
-                    <div className='w-full h-screen max-h-screen flex flex-col'>
-                        <div className="border-b">
-                            <div className="flex h-16 items-center px-4">
-                                <TeamSwitcher />
-                                <MainNav className="mx-6" />
-                                <div className="ml-auto flex items-center space-x-4">
-                                    <Search />
-                                    <UserNav />
-                                </div>
-                            </div>
-                        </div>
-                        <ScrollArea className='flex-1 w-full flex flex-col'>
-                            <FirestoreProvider>
-                                {children}
-                            </FirestoreProvider>
-
-                        </ScrollArea>
+        <body className={`flex ${inter.className}`}>
+        <Sidebar />
+        <div className='w-full h-screen max-h-screen flex flex-col'>
+            <div className="border-b">
+                <div className="flex h-16 items-center px-4">
+                    <TeamSwitcher />
+                    <MainNav className="mx-6" />
+                    <div className="ml-auto flex items-center space-x-4">
+                        <Search />
+                        <UserNav />
                     </div>
-                    <Toaster />
-                </body>
-            </ReactQueryProvider>
+                </div>
+            </div>
+            <ScrollArea className='flex-1 w-full flex flex-col'>
+                <FirestoreProvider>
+                    {children}
+                </FirestoreProvider>
+
+            </ScrollArea>
+        </div>
+        <Toaster />
+        </body>
         </html>
     )
 }

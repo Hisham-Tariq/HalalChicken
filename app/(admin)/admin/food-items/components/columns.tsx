@@ -5,7 +5,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { DataTableColumnHeader } from "../../../components/data-table-column-header"
-import { ItemRowActions } from "./item-row-actions"
+import { RowActions } from "./row-actions"
 
 import { FoodItemType } from '@/types/food-item'
 import { CircleDollarSign } from 'lucide-react'
@@ -144,6 +144,6 @@ export const columns: ColumnDef<FoodItemType>[] = [
   // },
   {
     id: "actions",
-    cell: ({ row }) => <ItemRowActions row={row} />,
+    cell: ({ row }) => <RowActions row={row} />,
   },
 ]

@@ -5,8 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { sidebarNavigationItems } from '@/constants/sidebar-data'
 import { Button } from '@/components/ui/button'
-import { Icons, GenericIcon } from '@/components/icons'
-import { LucideGenericIcon } from '@/components/lucide-generic-icon'
+import { GenericIcon } from '@/components/icons'
 
 const Sidebar = () => {
     const [path, setPath] = useState(usePathname())

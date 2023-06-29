@@ -1,4 +1,6 @@
 import { FirestoreUploadedFile } from './upload-file'
+import { PizzaSizesWithoutNameAndInch } from "@/types/pizza-sizes";
+
 
 export const FoodMainCategories = ['Burger', 'Pizza', 'Shawarminos', 'Chicken'] as const;
 export type FoodMainCategory = typeof FoodMainCategories[number];
@@ -26,6 +28,7 @@ export type FoodItemType = {
     availableInMeal: boolean,
     mealPrice: number,
     image: FirestoreUploadedFile,
+    sizes: PizzaSizesWithoutNameAndInch[]
 }
 
 // Define the shape of a food item with a file

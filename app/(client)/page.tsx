@@ -33,15 +33,16 @@ const frameworks = [
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-row items-center gap-2 p-24">
-      <Button>Default</Button>
-      <Button > Secondary</Button>
-      <Button variant={'destructive'}> Destructive</Button>
-      <Link href={'/'} className={buttonVariants({ variant: "outline" })}>Click here</Link>
-      <Button asChild>
-        <Link href="/login">Login</Link>
-      </Button>
-      <Combobox options={frameworks} defaultLabel='Select framework' buttonVariant='outline' searchLabel='Search Framworks'/>
-      <ComboboxReactHookForm/>
+        <h1>Halal Chicken</h1>
+      {/*<Button>Default</Button>*/}
+      {/*<Button > Secondary</Button>*/}
+      {/*<Button variant={'destructive'}> Destructive</Button>*/}
+      {/*<Link href={'/'} className={buttonVariants({ variant: "outline" })}>Click here</Link>*/}
+      {/*<Button asChild>*/}
+      {/*  <Link href="/login">Login</Link>*/}
+      {/*</Button>*/}
+      {/*<Combobox options={frameworks} defaultLabel='Select framework' buttonVariant='outline' searchLabel='Search Framworks'/>*/}
+      {/*<ComboboxReactHookForm/>*/}
     </main>
   )
 }

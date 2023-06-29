@@ -30,7 +30,7 @@ import { DataTablePagination } from "./data-table-pagination"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
-  toolbar: (table: import("@tanstack/table-core").Table<TData>) => React.ReactNode
+  toolbar: (table: import("@tanstack/table-core").Table<TData>) => React.ReactElement
 }
 
 export function DataTable<TData, TValue>({
@@ -67,7 +67,6 @@ export function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
-
   return (
     <div className="space-y-4">
       {/* render the toolbar and pass the table */}

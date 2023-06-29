@@ -17,6 +17,11 @@ export const sidebarNavigationItems: SidebarNavigationItem[] = [
         icon: 'foodItems',
     },
     {
+        title: 'Pizza',
+        path: '/admin/pizza',
+        icon: 'pizza',
+    },
+    {
         title: 'Orders',
         path: '/admin/orders',
         icon: 'order',

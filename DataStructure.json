@@ -1,0 +1,53 @@
+{
+  "FoodItems": [
+    {
+      "id": "7865467",
+      "name": "Zinger Burger",
+      "category": "Burger",
+      "mainCategory": "Burger",
+      "price": 9.99,
+      "availableWithMeal": true,
+      "mealPrice": 12.99,
+      "image": {
+        "path": "food-items/<unique>",
+        "downloadURL": "https://firebase...."
+      },
+      "sizes": []
+    },
+    {
+      "id": "34567890",
+      "name": "Veggie Pizza",
+      "category": "Pizza",
+      "mainCategory": "Pizza",
+      "price": 12.99,
+      "availableWithMeal": false,
+      "mealPrice": 0.00,
+      "image": {
+        "path": "food-items/<unique>",
+        "downloadURL": "https://firebase...."
+      },
+      "sizes": [
+        {
+          "name": "SM",
+          "inch": 12,
+          "price": 12.99
+        },
+        {
+          "name": "MD",
+          "inch": 14,
+          "price": 16.99
+        },
+        {
+          "name": "LG",
+          "inch": 16,
+          "price": 20.99
+        },
+        {
+          "name": "FM",
+          "inch": 20,
+          "price": 24.99
+        }
+      ]
+    }
+  ]
+}

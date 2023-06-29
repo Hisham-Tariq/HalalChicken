@@ -99,7 +99,6 @@ export function NewItemDialog(props: NewItemDialogProps) {
 
     const onImageChanged = (e: React.ChangeEvent<HTMLInputElement>, onFieldChange: (...event: any[]) => void) => {
         const file = e.target.files?.[0]
-        console.log(file)
         let message = undefined;
         if (!file) message = "Image is required";
         else if (file.size > MAX_FILE_SIZE) message = `Max file size is 5MB.`;
@@ -160,7 +159,6 @@ export function NewItemDialog(props: NewItemDialogProps) {
             } else {
                 foodItem = { ...item, ...values, image: item.image } as FoodItemType
             }
-            console.log(foodItem)
             FoodItemsService.instance.updateFoodItem(item.id!, foodItem, item).then(() => {
                 // onItemAdded?.()
                 toast({
